@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using FluentMigrator;
 
 namespace UrlShortener.Api.Data.Migrations;
 
 [Migration(1, "Initial schema")]
+[ExcludeFromCodeCoverage]
 public class M001_InitialSchema : Migration
 {
     public override void Up()

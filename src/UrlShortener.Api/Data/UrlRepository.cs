@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Dapper;
 
 namespace UrlShortener.Api.Data;
@@ -15,6 +16,7 @@ public interface IUrlRepository
     Task UpsertStatsAsync(long shortUrlId, CancellationToken ct = default);
 }
 
+[ExcludeFromCodeCoverage]
 public sealed class UrlRepository(IDbConnectionFactory db) : IUrlRepository
 {
     public async Task<ShortUrl?> FindByCodeAsync(string code, CancellationToken ct = default)

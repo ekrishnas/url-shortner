@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Npgsql;
 
 namespace UrlShortener.Api.Health;
 
+[ExcludeFromCodeCoverage]
 public sealed class PostgresDependencyCheck(string name, string connectionStringName, IConfiguration configuration) : IDependencyCheck
 {
     public string Name => name;

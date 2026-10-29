@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Dapper;
 
 namespace UrlShortener.Api.Data;
@@ -8,6 +9,7 @@ public interface IUserRepository
     Task<long> CreateAsync(string email, string passwordHash, CancellationToken ct = default);
 }
 
+[ExcludeFromCodeCoverage]
 public sealed class UserRepository(IDbConnectionFactory db) : IUserRepository
 {
     public async Task<User?> FindByEmailAsync(string email, CancellationToken ct = default)

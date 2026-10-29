@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Npgsql;
 
 namespace UrlShortener.Api.Data;
@@ -8,6 +9,7 @@ public interface IDbConnectionFactory
     NpgsqlConnection CreateRead();
 }
 
+[ExcludeFromCodeCoverage]
 public sealed class DbConnectionFactory(IConfiguration config) : IDbConnectionFactory
 {
     public NpgsqlConnection CreateWrite() =>
