@@ -1,0 +1,11 @@
+name: url-shortner
+spec_format: openspec
+paths:
+  src: "src/**"
+  tests: "tests/**"
+  docs: "docs/**"
+commands:
+  build: dotnet build
+  test: dotnet test
+dependency_manifests: ["**/*.csproj"]
+protected: ["**/Migrations/**"]
