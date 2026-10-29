@@ -13,7 +13,7 @@
 - [x] 2.1 Create `tests/UrlShortener.Tests/UrlShortener.Tests.csproj` (`Microsoft.NET.Sdk`, `net10.0`, `IsPackable` false, pinned `xunit`, `xunit.runner.visualstudio`, `Microsoft.NET.Test.Sdk`, `Microsoft.AspNetCore.Mvc.Testing`, `ProjectReference` to `../../src/UrlShortener.Api/UrlShortener.Api.csproj`); verify `dotnet build tests/UrlShortener.Tests` exits 0
 - [x] 2.2 Add `tests/UrlShortener.Tests/Health/HealthEndpointTests.cs` using `IClassFixture<WebApplicationFactory<Program>>`: `GET /health` asserts status 200 only (spec "App is running", "No external services available")
 - [x] 2.3 In the same file, add a test sending `GET /health` with no auth header asserting 200 (spec "Request without credentials"), a test that `GET /urls` returns 404 (spec "Unknown route"), and a test that `POST /health` is not 200 (spec "Wrong method on health route")
-- [ ] 2.4 Run `dotnet test tests/UrlShortener.Tests` and verify it exits 0, reports at least one passed test and no skipped tests
+- [x] 2.4 Run `dotnet test tests/UrlShortener.Tests` and verify it exits 0, reports at least one passed test and no skipped tests
 
 ## 3. Documentation
 
