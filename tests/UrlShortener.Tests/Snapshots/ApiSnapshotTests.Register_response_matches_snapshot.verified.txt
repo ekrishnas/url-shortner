@@ -1,0 +1,4 @@
+﻿{
+  id: {Scrubbed},
+  email: snap@example.com
+}

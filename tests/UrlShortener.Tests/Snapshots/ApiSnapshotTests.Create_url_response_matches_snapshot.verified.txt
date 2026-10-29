@@ -1,0 +1,6 @@
+﻿{
+  id: {Scrubbed},
+  code: {Scrubbed},
+  targetUrl: https://example.com,
+  createdAt: {Scrubbed}
+}
