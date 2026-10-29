@@ -6,7 +6,7 @@ using UrlShortener.Api.Data;
 namespace UrlShortener.Api.Urls;
 
 public sealed record CreateUrlRequest(string TargetUrl);
-public sealed record CreateUrlResponse(long Id, string Code, string TargetUrl, DateTimeOffset CreatedAt);
+public sealed record CreateUrlResponse(long Id, string Code, string TargetUrl, DateTime CreatedAt);
 
 public sealed class CreateUrlValidator : Validator<CreateUrlRequest>
 {

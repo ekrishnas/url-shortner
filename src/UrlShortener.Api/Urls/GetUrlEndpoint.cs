@@ -5,7 +5,7 @@ using UrlShortener.Api.Data;
 namespace UrlShortener.Api.Urls;
 
 public sealed record GetUrlRequest { public long Id { get; init; } }
-public sealed record UrlDetail(long Id, string Code, string TargetUrl, bool IsActive, long ClickCount, DateTimeOffset CreatedAt);
+public sealed record UrlDetail(long Id, string Code, string TargetUrl, bool IsActive, long ClickCount, DateTime CreatedAt);
 
 public sealed class GetUrlEndpoint(IUrlRepository urls) : Endpoint<GetUrlRequest, UrlDetail>
 {

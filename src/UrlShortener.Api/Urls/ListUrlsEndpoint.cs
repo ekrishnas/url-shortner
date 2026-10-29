@@ -10,7 +10,7 @@ public sealed record ListUrlsRequest
     [QueryParam] public int PageSize { get; init; } = 20;
 }
 
-public sealed record UrlSummary(long Id, string Code, string TargetUrl, bool IsActive, long ClickCount, DateTimeOffset CreatedAt);
+public sealed record UrlSummary(long Id, string Code, string TargetUrl, bool IsActive, long ClickCount, DateTime CreatedAt);
 
 public sealed class ListUrlsEndpoint(IUrlRepository urls) : Endpoint<ListUrlsRequest, IEnumerable<UrlSummary>>
 {

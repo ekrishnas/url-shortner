@@ -1,6 +1,6 @@
 namespace UrlShortener.Api.Data;
 
-public sealed record User(long Id, string Email, string PasswordHash, DateTimeOffset CreatedAt);
+public sealed record User(long Id, string Email, string PasswordHash, DateTime CreatedAt);
 
 public sealed record ShortUrl(
     long Id,
@@ -8,7 +8,7 @@ public sealed record ShortUrl(
     string TargetUrl,
     long UserId,
     bool IsActive,
-    DateTimeOffset CreatedAt);
+    DateTime CreatedAt);
 
 public sealed record UrlStats(long ShortUrlId, long ClickCount, DateTimeOffset? LastClickedAt);
 

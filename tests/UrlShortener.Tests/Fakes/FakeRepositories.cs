@@ -15,7 +15,7 @@ public sealed class FakeUserRepository : IUserRepository
     public Task<long> CreateAsync(string email, string passwordHash, CancellationToken ct = default)
     {
         var id = _nextId++;
-        _byEmail[email] = new User(id, email, passwordHash, DateTimeOffset.UtcNow);
+        _byEmail[email] = new User(id, email, passwordHash, DateTime.UtcNow);
         return Task.FromResult(id);
     }
 }
@@ -49,7 +49,7 @@ public sealed class FakeUrlRepository : IUrlRepository
     public Task<ShortUrl> CreateAsync(string code, string targetUrl, long userId, CancellationToken ct = default)
     {
         var id = _nextId++;
-        var url = new ShortUrl(id, code, targetUrl, userId, true, DateTimeOffset.UtcNow);
+        var url = new ShortUrl(id, code, targetUrl, userId, true, DateTime.UtcNow);
         _byId[id] = url;
         _byCode[code] = url;
         return Task.FromResult(url);

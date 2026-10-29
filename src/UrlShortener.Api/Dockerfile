@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["UrlShortener.Api.csproj", "."]
 RUN dotnet restore
 COPY . .
-RUN dotnet publish -c Release -o /app/publish --no-restore
+RUN dotnet publish -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

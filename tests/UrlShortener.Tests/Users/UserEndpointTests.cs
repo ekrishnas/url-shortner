@@ -22,7 +22,7 @@ public class UserEndpointTests
     {
         using var ctx = new FakeContext();
         ctx.Users.Seed(new User(1, "dup@example.com",
-            PasswordHelper.Hash("pass1234"), DateTimeOffset.UtcNow));
+            PasswordHelper.Hash("pass1234"), DateTime.UtcNow));
 
         var response = await ctx.CreateClient().PostAsJsonAsync("/v1/users/register",
             new { email = "dup@example.com", password = "Password123!" });
@@ -35,7 +35,7 @@ public class UserEndpointTests
     {
         using var ctx = new FakeContext();
         ctx.Users.Seed(new User(1, "user@example.com",
-            PasswordHelper.Hash("Password123!"), DateTimeOffset.UtcNow));
+            PasswordHelper.Hash("Password123!"), DateTime.UtcNow));
 
         var response = await ctx.CreateClient().PostAsJsonAsync("/v1/users/login",
             new { email = "user@example.com", password = "Password123!" });
@@ -50,7 +50,7 @@ public class UserEndpointTests
     {
         using var ctx = new FakeContext();
         ctx.Users.Seed(new User(1, "user@example.com",
-            PasswordHelper.Hash("correct"), DateTimeOffset.UtcNow));
+            PasswordHelper.Hash("correct"), DateTime.UtcNow));
 
         var response = await ctx.CreateClient().PostAsJsonAsync("/v1/users/login",
             new { email = "user@example.com", password = "wrong" });
@@ -72,7 +72,7 @@ public class UserEndpointTests
     {
         using var ctx = new FakeContext();
         ctx.Users.Seed(new User(42, "me@example.com",
-            PasswordHelper.Hash("Password123!"), DateTimeOffset.UtcNow));
+            PasswordHelper.Hash("Password123!"), DateTime.UtcNow));
         var client = ctx.CreateClient();
         await client.PostAsJsonAsync("/v1/users/login",
             new { email = "me@example.com", password = "Password123!" });
@@ -95,7 +95,7 @@ public class UserEndpointTests
     {
         using var ctx = new FakeContext();
         ctx.Users.Seed(new User(1, "user@example.com",
-            PasswordHelper.Hash("Password123!"), DateTimeOffset.UtcNow));
+            PasswordHelper.Hash("Password123!"), DateTime.UtcNow));
         var client = ctx.CreateClient();
         await client.PostAsJsonAsync("/v1/users/login",
             new { email = "user@example.com", password = "Password123!" });

@@ -11,7 +11,7 @@ public class UrlEndpointTests
     private static async Task<HttpClient> LoginAsync(FakeContext ctx)
     {
         ctx.Users.Seed(new User(1, "owner@example.com",
-            PasswordHelper.Hash("Password123!"), DateTimeOffset.UtcNow));
+            PasswordHelper.Hash("Password123!"), DateTime.UtcNow));
         var client = ctx.CreateClient();
         await client.PostAsJsonAsync("/v1/users/login",
             new { email = "owner@example.com", password = "Password123!" });
@@ -46,7 +46,7 @@ public class UrlEndpointTests
     public async Task List_urls_returns_200()
     {
         using var ctx = new FakeContext();
-        ctx.Urls.Seed(new ShortUrl(1, "abc123", "https://example.com", 1, true, DateTimeOffset.UtcNow));
+        ctx.Urls.Seed(new ShortUrl(1, "abc123", "https://example.com", 1, true, DateTime.UtcNow));
         var client = await LoginAsync(ctx);
 
         var response = await client.GetAsync("/v1/urls");
@@ -58,7 +58,7 @@ public class UrlEndpointTests
     public async Task Get_url_by_id_found_returns_200()
     {
         using var ctx = new FakeContext();
-        ctx.Urls.Seed(new ShortUrl(99, "abc123", "https://example.com", 1, true, DateTimeOffset.UtcNow));
+        ctx.Urls.Seed(new ShortUrl(99, "abc123", "https://example.com", 1, true, DateTime.UtcNow));
         var client = await LoginAsync(ctx);
 
         var response = await client.GetAsync("/v1/urls/99");
@@ -81,7 +81,7 @@ public class UrlEndpointTests
     public async Task Deactivate_url_found_returns_204()
     {
         using var ctx = new FakeContext();
-        ctx.Urls.Seed(new ShortUrl(5, "abc123", "https://example.com", 1, true, DateTimeOffset.UtcNow));
+        ctx.Urls.Seed(new ShortUrl(5, "abc123", "https://example.com", 1, true, DateTime.UtcNow));
         var client = await LoginAsync(ctx);
 
         var response = await client.PostAsync("/v1/urls/5/deactivate", null);
@@ -104,7 +104,7 @@ public class UrlEndpointTests
     public async Task Delete_url_found_returns_204()
     {
         using var ctx = new FakeContext();
-        ctx.Urls.Seed(new ShortUrl(7, "abc123", "https://example.com", 1, true, DateTimeOffset.UtcNow));
+        ctx.Urls.Seed(new ShortUrl(7, "abc123", "https://example.com", 1, true, DateTime.UtcNow));
         var client = await LoginAsync(ctx);
 
         var response = await client.DeleteAsync("/v1/urls/7");
@@ -123,5 +123,5 @@ public class UrlEndpointTests
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    private sealed record CreateResponse(long Id, string Code, string TargetUrl, DateTimeOffset CreatedAt);
+    private sealed record CreateResponse(long Id, string Code, string TargetUrl, DateTime CreatedAt);
 }

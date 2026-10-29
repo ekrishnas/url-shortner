@@ -11,6 +11,8 @@ using UrlShortener.Api.Data;
 using UrlShortener.Api.Health;
 using UrlShortener.Api.Urls;
 
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // --- App:Role ---

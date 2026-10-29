@@ -10,7 +10,7 @@ public class RedirectEndpointTests
     public async Task Known_code_redirects_to_target()
     {
         using var ctx = new FakeContext();
-        ctx.Urls.Seed(new ShortUrl(1, "abc123", "https://example.com", 1, true, DateTimeOffset.UtcNow));
+        ctx.Urls.Seed(new ShortUrl(1, "abc123", "https://example.com", 1, true, DateTime.UtcNow));
         var client = ctx.CreateClientNoRedirect();
 
         var response = await client.GetAsync("/abc123");
