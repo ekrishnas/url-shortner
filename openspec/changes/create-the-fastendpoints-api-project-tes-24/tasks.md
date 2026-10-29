@@ -6,7 +6,7 @@
 - [x] 1.2 Create `src/UrlShortener.Api/Program.cs` with `AddFastEndpoints()`, `UseFastEndpoints()`, no `Map*` route calls, ending in `public partial class Program { }`; add `appsettings.json` with logging defaults and `AllowedHosts` only; verify by inspection that no `app.Map` call exists
 - [x] 1.3 Create `src/UrlShortener.Api/Health/HealthEndpoint.cs` with `HealthResponse` and `HealthEndpoint` exactly as in design.md "API contract" (`GET /health`, anonymous, 200 `{"status":"Healthy"}`, no injected dependencies); verify it is the only endpoint class in the file
 - [x] 1.4 Add empty `.gitkeep` files to `src/UrlShortener.Api/Urls/`, `Redirect/`, `Users/`, `Analytics/` and `Data/`; verify `git status` lists all five
-- [ ] 1.5 Run `dotnet build src/UrlShortener.Api` and verify it exits 0; verify no `*.sln`/`*.slnx` file exists and no file outside `src/`, `tests/`, `docs/` was added
+- [x] 1.5 Run `dotnet build src/UrlShortener.Api` and verify it exits 0; verify no `*.sln`/`*.slnx` file exists and no file outside `src/`, `tests/`, `docs/` was added
 
 ## 2. Tests
 
