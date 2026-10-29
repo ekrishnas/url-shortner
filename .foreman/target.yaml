@@ -4,8 +4,11 @@ paths:
   src: "src/**"
   tests: "tests/**"
   docs: "docs/**"
+  ci: ".github/**"
+  ignore: ".gitignore"
 commands:
   build: dotnet build src/UrlShortener.Api
   test: dotnet test tests/UrlShortener.Tests
 dependency_manifests: ["**/*.csproj"]
 protected: ["**/Migrations/**"]
+requires: [docker]
