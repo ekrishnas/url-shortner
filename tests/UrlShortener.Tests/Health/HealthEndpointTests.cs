@@ -19,6 +19,7 @@ public class HealthEndpointTests : IClassFixture<DependencyContainersFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task Get_health_with_all_dependencies_reachable_returns_200()
     {
         using var factory = _dependencies.CreateHealthyFactory();
@@ -30,6 +31,7 @@ public class HealthEndpointTests : IClassFixture<DependencyContainersFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task Get_health_with_all_dependencies_reachable_returns_json_healthy_body()
     {
         using var factory = _dependencies.CreateHealthyFactory();
@@ -44,6 +46,7 @@ public class HealthEndpointTests : IClassFixture<DependencyContainersFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task Get_health_without_credentials_and_dependencies_reachable_returns_200()
     {
         using var factory = _dependencies.CreateHealthyFactory();
@@ -60,6 +63,7 @@ public class HealthEndpointTests : IClassFixture<DependencyContainersFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task Get_health_with_only_write_unreachable_reports_postgres_write()
     {
         using var factory = DependencyContainersFixture.CreateFactory(
@@ -71,6 +75,7 @@ public class HealthEndpointTests : IClassFixture<DependencyContainersFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task Get_health_with_only_read_unreachable_reports_postgres_read()
     {
         using var factory = DependencyContainersFixture.CreateFactory(
@@ -82,6 +87,7 @@ public class HealthEndpointTests : IClassFixture<DependencyContainersFixture>
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task Get_health_with_only_redis_unreachable_reports_redis()
     {
         using var factory = DependencyContainersFixture.CreateFactory(

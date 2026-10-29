@@ -1,0 +1,109 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    name: Build & xUnit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore
+        run: dotnet restore src/UrlShortener.Api
+      - name: Build
+        run: dotnet build src/UrlShortener.Api --no-restore
+      - name: Test
+        run: |
+          dotnet test tests/UrlShortener.Tests \
+            --filter "Category!=Integration" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: ./coverage
+
+  coverage-gate:
+    name: Coverage ≥ 80%
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test with coverage
+        run: |
+          dotnet test tests/UrlShortener.Tests \
+            --filter "Category!=Integration" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage
+      - name: Install reportgenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      - name: Check threshold
+        run: |
+          reportgenerator \
+            -reports:"./coverage/**/coverage.cobertura.xml" \
+            -targetdir:"./coverage-report" \
+            -reporttypes:TextSummary
+          cat ./coverage-report/Summary.txt
+          COVERAGE=$(grep 'Line coverage' ./coverage-report/Summary.txt | grep -oP '\d+\.\d+')
+          echo "Line coverage: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Coverage ${COVERAGE}% is below 80% threshold"
+            exit 1
+          fi
+
+  gitleaks:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sca:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Check for vulnerable packages
+        run: dotnet list src/UrlShortener.Api package --vulnerable --include-transitive 2>&1 | tee vuln.txt
+      - name: Fail on vulnerabilities
+        run: |
+          if grep -q "has the following vulnerable packages" vuln.txt; then
+            echo "Vulnerable packages found!"
+            cat vuln.txt
+            exit 1
+          fi
+
+  codeql:
+    name: SAST (CodeQL)
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build
+        run: dotnet build src/UrlShortener.Api
+      - uses: github/codeql-action/analyze@v3
