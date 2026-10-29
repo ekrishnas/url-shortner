@@ -26,9 +26,7 @@ public sealed class TimingMiddleware(RequestDelegate next, ILogger<TimingMiddlew
         finally
         {
             sw.Stop();
-            logger.LogInformation("{Method} {Path} {Status} {ElapsedMs:F2}ms",
-                context.Request.Method,
-                context.Request.Path,
+            logger.LogInformation("{Status} {ElapsedMs:F2}ms",
                 context.Response.StatusCode,
                 sw.Elapsed.TotalMilliseconds);
         }
