@@ -17,4 +17,4 @@
 
 ## 3. Documentation
 
-- [ ] 3.1 Write `docs/api/health.md` describing `GET /health` (purpose: liveness only, anonymous, 200 with `{"status":"Healthy"}`, no dependency checks) and the build and test commands `dotnet build src/UrlShortener.Api` and `dotnet test tests/UrlShortener.Tests`; verify the documented commands run as written
+- [x] 3.1 Write `docs/api/health.md` describing `GET /health` (purpose: liveness only, anonymous, 200 with `{"status":"Healthy"}`, no dependency checks) and the build and test commands `dotnet build src/UrlShortener.Api` and `dotnet test tests/UrlShortener.Tests`; verify the documented commands run as written
