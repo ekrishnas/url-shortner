@@ -5,7 +5,7 @@ paths:
   tests: "tests/**"
   docs: "docs/**"
 commands:
-  build: dotnet build
-  test: dotnet test
+  build: dotnet build src/UrlShortener.Api
+  test: dotnet test tests/UrlShortener.Tests
 dependency_manifests: ["**/*.csproj"]
 protected: ["**/Migrations/**"]
