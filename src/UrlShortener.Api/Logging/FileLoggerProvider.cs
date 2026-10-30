@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace UrlShortener.Api.Logging;
 
+[ExcludeFromCodeCoverage]
 public sealed class FileLoggerProvider(string path) : ILoggerProvider
 {
     private readonly object _gate = new();

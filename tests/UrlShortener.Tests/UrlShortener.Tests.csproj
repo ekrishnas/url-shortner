@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <RootNamespace>UrlShortener.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,8 +14,11 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Testcontainers.PostgreSql" Version="4.6.0" />
     <PackageReference Include="Testcontainers.Redis" Version="4.6.0" />
+    <PackageReference Include="Verify.Http" Version="2.3.0" />
+    <PackageReference Include="Verify.Xunit" Version="22.2.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/UrlShortener.Api/UrlShortener.Api.csproj" />
+    <ProjectReference Include="..\..\src\UrlShortener.Api\UrlShortener.Api.csproj" />
   </ItemGroup>
 
 </Project>

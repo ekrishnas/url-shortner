@@ -1,0 +1,8 @@
+﻿{
+  status: Unhealthy,
+  failing: [
+    postgres-write,
+    postgres-read,
+    redis
+  ]
+}

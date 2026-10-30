@@ -53,6 +53,7 @@ public sealed class DependencyContainersFixture : IAsyncLifetime
 
         return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
+            builder.UseEnvironment("Test");
             builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(overrides));
             if (configureLogging is not null)
             {

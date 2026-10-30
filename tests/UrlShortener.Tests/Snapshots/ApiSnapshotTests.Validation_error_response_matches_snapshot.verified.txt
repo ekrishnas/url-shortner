@@ -1,0 +1,17 @@
+﻿{
+  type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+  title: Bad Request,
+  status: 400,
+  instance: {Scrubbed},
+  traceId: {Scrubbed},
+  errors: [
+    {
+      name: email,
+      reason: 'email' is not a valid email address.
+    },
+    {
+      name: password,
+      reason: The length of 'password' must be at least 8 characters. You entered 1 characters.
+    }
+  ]
+}

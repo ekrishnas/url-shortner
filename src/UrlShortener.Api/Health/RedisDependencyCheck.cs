@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using StackExchange.Redis;
 
 namespace UrlShortener.Api.Health;
 
+[ExcludeFromCodeCoverage]
 public sealed class RedisDependencyCheck(IConfiguration configuration) : IDependencyCheck
 {
     public string Name => "redis";

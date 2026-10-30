@@ -1,55 +1,37 @@
 using FastEndpoints;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace UrlShortener.Api.Health;
 
-public sealed record HealthResponse(string Status, IReadOnlyList<string> Failing);
-
-public sealed class HealthEndpoint(IEnumerable<IDependencyCheck> checks) : EndpointWithoutRequest<HealthResponse>
+public sealed class HealthEndpoint(HealthCheckService healthCheckService, ILogger<HealthEndpoint> logger) : EndpointWithoutRequest
 {
-    private static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(3);
-
     public override void Configure()
     {
         Get("/health");
         AllowAnonymous();
+        Tags("Health");
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var all = checks.ToList();
-        var results = await Task.WhenAll(all.Select(check => RunAsync(check, ct)));
+        var report = await healthCheckService.CheckHealthAsync(ct);
 
-        var failing = new List<string>();
-        for (var i = 0; i < all.Count; i++)
-        {
-            if (!results[i])
-            {
-                failing.Add(all[i].Name);
-                Logger.LogWarning("Health check failed: {Dependency}", all[i].Name);
-            }
-        }
+        var failing = report.Entries
+            .Where(e => e.Value.Status != HealthStatus.Healthy)
+            .Select(e => e.Key)
+            .ToArray();
 
-        if (failing.Count == 0)
-        {
-            Logger.LogInformation("Health check: Healthy");
-            await Send.OkAsync(new HealthResponse("Healthy", []), ct);
-            return;
-        }
+        foreach (var name in failing)
+            logger.LogWarning("Health check '{name}' is unhealthy", name);
 
-        await Send.ResponseAsync(new HealthResponse("Unhealthy", failing), 503, ct);
-    }
+        var status = report.Status == HealthStatus.Healthy ? "Healthy" : "Unhealthy";
+        var statusCode = report.Status == HealthStatus.Healthy ? 200 : 503;
 
-    private static async Task<bool> RunAsync(IDependencyCheck check, CancellationToken ct)
-    {
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        cts.CancelAfter(CheckTimeout);
-        try
-        {
-            return await check.IsHealthyAsync(cts.Token);
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await HttpContext.Response.SendAsync(
+            new HealthResponse(status, failing),
+            statusCode,
+            cancellation: ct);
     }
 }
+
+internal sealed record HealthResponse(string Status, string[] Failing);
