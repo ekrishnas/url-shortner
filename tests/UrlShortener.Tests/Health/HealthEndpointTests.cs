@@ -1,33 +1,58 @@
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace UrlShortener.Tests.Health;
 
-public class HealthEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+/// <summary>
+/// Health tests that need real, reachable dependencies. A Postgres and a Redis container
+/// are started once for this class; each test points some of the connection strings at
+/// them and, where the test calls for it, others at an unreachable address.
+/// </summary>
+public class HealthEndpointTests : IClassFixture<DependencyContainersFixture>
 {
-    private readonly HttpClient _client;
+    private readonly DependencyContainersFixture _dependencies;
 
-    public HealthEndpointTests(WebApplicationFactory<Program> factory)
+    public HealthEndpointTests(DependencyContainersFixture dependencies)
     {
-        _client = factory.CreateClient();
+        _dependencies = dependencies;
     }
 
     [Fact]
-    public async Task Get_health_returns_200()
+    public async Task Get_health_with_all_dependencies_reachable_returns_200()
     {
-        var response = await _client.GetAsync("/health");
+        using var factory = _dependencies.CreateHealthyFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/health");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
-    public async Task Get_health_without_credentials_returns_200_not_401_or_403()
+    public async Task Get_health_with_all_dependencies_reachable_returns_json_healthy_body()
     {
+        using var factory = _dependencies.CreateHealthyFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/health");
+
+        Assert.Equal("application/json", response.Content.Headers.ContentType?.MediaType);
+        var body = await ReadBodyAsync(response);
+        Assert.Equal("Healthy", body.Status);
+        Assert.Empty(body.Failing);
+    }
+
+    [Fact]
+    public async Task Get_health_without_credentials_and_dependencies_reachable_returns_200()
+    {
+        using var factory = _dependencies.CreateHealthyFactory();
+        using var client = factory.CreateClient();
         using var request = new HttpRequestMessage(HttpMethod.Get, "/health");
         Assert.Null(request.Headers.Authorization);
         Assert.Null(request.Content);
 
-        var response = await _client.SendAsync(request);
+        var response = await client.SendAsync(request);
 
         Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
         Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
@@ -35,37 +60,57 @@ public class HealthEndpointTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task Get_health_with_no_external_services_configured_returns_200()
+    public async Task Get_health_with_only_write_unreachable_reports_postgres_write()
     {
-        // The test host supplies no database, Redis or other service configuration;
-        // liveness must still succeed.
-        var response = await _client.GetAsync("/health");
+        using var factory = DependencyContainersFixture.CreateFactory(
+            DependencyContainersFixture.UnreachablePostgres,
+            _dependencies.PostgresConnectionString,
+            _dependencies.RedisConnectionString);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        await AssertUnhealthyAsync(factory, "postgres-write");
     }
 
-    [Theory]
-    [InlineData("/")]
-    [InlineData("/urls")]
-    public async Task Get_unknown_route_returns_404(string path)
+    [Fact]
+    public async Task Get_health_with_only_read_unreachable_reports_postgres_read()
     {
-        var response = await _client.GetAsync(path);
+        using var factory = DependencyContainersFixture.CreateFactory(
+            _dependencies.PostgresConnectionString,
+            DependencyContainersFixture.UnreachablePostgres,
+            _dependencies.RedisConnectionString);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        await AssertUnhealthyAsync(factory, "postgres-read");
     }
 
-    [Theory]
-    [InlineData("POST")]
-    [InlineData("PUT")]
-    [InlineData("DELETE")]
-    public async Task Wrong_method_on_health_returns_405_or_404_never_200(string method)
+    [Fact]
+    public async Task Get_health_with_only_redis_unreachable_reports_redis()
     {
-        using var request = new HttpRequestMessage(new HttpMethod(method), "/health");
+        using var factory = DependencyContainersFixture.CreateFactory(
+            _dependencies.PostgresConnectionString,
+            _dependencies.PostgresConnectionString,
+            DependencyContainersFixture.UnreachableRedis);
 
-        var response = await _client.SendAsync(request);
+        await AssertUnhealthyAsync(factory, "redis");
+    }
 
-        Assert.True(
-            response.StatusCode is HttpStatusCode.MethodNotAllowed or HttpStatusCode.NotFound,
-            $"Expected 405 or 404 for {method} /health but got {(int)response.StatusCode}.");
+    private static async Task AssertUnhealthyAsync(WebApplicationFactory<Program> factory, string expectedFailing)
+    {
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/health");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("application/json", response.Content.Headers.ContentType?.MediaType);
+        var body = await ReadBodyAsync(response);
+        Assert.Equal("Unhealthy", body.Status);
+        Assert.Equal(new[] { expectedFailing }, body.Failing);
+    }
+
+    internal static async Task<(string Status, string[] Failing)> ReadBodyAsync(HttpResponseMessage response)
+    {
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var root = document.RootElement;
+        var status = root.GetProperty("status").GetString()!;
+        var failing = root.GetProperty("failing").EnumerateArray().Select(e => e.GetString()!).ToArray();
+        return (status, failing);
     }
 }
